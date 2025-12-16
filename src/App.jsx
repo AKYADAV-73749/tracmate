@@ -98,16 +98,35 @@ const GEMINI_MODEL = "gemini-2.5-flash-preview-09-2025";
 const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${apiKey}`;
 
 // --- Modern Components ---
+const glass =
+  "backdrop-blur-xl bg-white/70 dark:bg-slate-800/70 border border-white/20 dark:border-slate-700/60";
+
 
 const Card = ({ children, className = "", darkMode = false }) => (
-  <div className={`${darkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-100'} rounded-3xl border shadow-sm transition-all duration-200 hover:shadow-md ${className}`}>
-    {children}
+  <div
+    className={`
+      relative rounded-3xl border
+      ${darkMode ? "bg-slate-800/70 border-slate-700/60" : "bg-white/80 border-slate-200/70"}
+      backdrop-blur-xl
+      shadow-[0_10px_40px_-15px_rgba(0,0,0,0.3)]
+      transition-all duration-300
+      hover:-translate-y-1 hover:shadow-[0_25px_60px_-20px_rgba(99,102,241,0.35)]
+      ${className}
+    `}
+  >
+    {/* subtle gradient glow */}
+    <div className="pointer-events-none absolute inset-0 rounded-3xl bg-gradient-to-tr from-indigo-500/10 via-purple-500/5 to-pink-500/10 opacity-0 hover:opacity-100 transition-opacity duration-500" />
+    <div className="relative z-10">{children}</div>
   </div>
 );
 
 const Button = ({ children, onClick, variant = "primary", className = "", type="button", disabled=false }) => {
-  const baseStyle = "px-5 py-2.5 rounded-xl font-semibold transition-all duration-200 flex items-center justify-center gap-2 active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed disabled:active:scale-100";
-  
+  const baseStyle =
+  "px-5 py-2.5 rounded-xl font-semibold flex items-center justify-center gap-2 \
+   transition-all duration-200 active:scale-95 \
+   shadow-md hover:shadow-lg hover:-translate-y-[1px] \
+   disabled:opacity-60 disabled:cursor-not-allowed disabled:shadow-none disabled:translate-y-0";
+
   const variants = {
     primary: "bg-slate-900 hover:bg-slate-800 text-white shadow-lg shadow-slate-900/20",
     secondary: "bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 hover:border-slate-300",
