@@ -739,7 +739,7 @@ export default function Trackmate() {
     reader.readAsDataURL(file);
   };
 
-  const handleExportCSV = () => {
+const handleExportCSV = () => {
     if (transactions.length === 0) return;
     const headers = ["Date", "Description", "Category", "Type", "Amount", "Recurring"];
     const rows = transactions.map(t => [
@@ -751,6 +751,11 @@ export default function Trackmate() {
       t.isRecurring ? "Yes" : "No"
     ]);
     
+    // --- NEW CODE: Add Total Spent Row ---
+    const totalSpent = transactions.reduce((acc, t) => t.type === 'expense' ? acc + parseFloat(t.amount) : acc, 0);
+    rows.push(["", "", "", "Total Spent", totalSpent, ""]);
+    // -------------------------------------
+
     const csvContent = "data:text/csv;charset=utf-8," 
       + headers.join(",") + "\n" 
       + rows.map(e => e.join(",")).join("\n");
@@ -763,7 +768,6 @@ export default function Trackmate() {
     link.click();
     document.body.removeChild(link);
   };
-
   // Smart Category Learning
   const handleDescriptionChange = (e) => {
       const val = e.target.value;
@@ -1170,8 +1174,18 @@ export default function Trackmate() {
           )}
 
           {/* Other Tabs Content Rendering... */}
-          {activeTab === 'transactions' && (
+         {activeTab === 'transactions' && (
             <Card className="overflow-hidden" darkMode={darkMode}>
+              {/* --- NEW CODE: Total Spent Header --- */}
+              <div className="p-6 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center bg-indigo-50 dark:bg-slate-800">
+                  <h3 className={`font-bold ${darkMode ? 'text-white' : 'text-slate-100'}`}>Recent Transactions</h3>
+                  <div className="text-right">
+                      <p className="text-xl text-blue-500 uppercase font-bold">Total Spent</p>
+                      <p className="text-xl font-bold text-red-600">₹{stats.expense.toLocaleString()}</p>
+                  </div>
+              </div>
+              {/* ------------------------------------ */}
+
               <div className="overflow-x-auto">
                 <table className="w-full text-left">
                   <thead className={`${darkMode ? 'bg-slate-700/50 text-slate-400' : 'bg-slate-50 text-slate-500'} text-xs uppercase font-bold tracking-wider`}>
