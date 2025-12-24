@@ -77,7 +77,7 @@ import {
 
 // --- Firebase Configuration & Initialization ---
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY, // ✅ Secure!
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY, //  Secure!
   authDomain: "trackmate-764d7.firebaseapp.com",
   projectId: "trackmate-764d7",
   storageBucket: "trackmate-764d7.firebasestorage.app",
@@ -97,7 +97,7 @@ const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
 const GEMINI_MODEL = "gemini-2.5-flash-preview-09-2025";
 const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${apiKey}`;
 
-// --- Modern Components ---
+
 const glass =
   "backdrop-blur-xl bg-white/70 dark:bg-slate-800/70 border border-white/20 dark:border-slate-700/60";
 
@@ -343,7 +343,7 @@ const SpendingHeatmap = ({ transactions, darkMode }) => {
   transactions.forEach(t => {
     if (t.type === 'expense') {
       const tDate = new Date(t.date);
-      // Filter to only show data for the currently selected month/year
+      
       if (tDate.getMonth() === month && tDate.getFullYear() === year) {
          const d = tDate.getDate();
          spendingMap[d] = (spendingMap[d] || 0) + parseFloat(t.amount);
@@ -354,7 +354,7 @@ const SpendingHeatmap = ({ transactions, darkMode }) => {
   const maxSpend = Math.max(...Object.values(spendingMap), 100);
 
   const days = [];
-  // Add empty slots for days before start of month (simple offset logic can be added here if needed)
+ 
   for (let i = 1; i <= daysInMonth; i++) {
     const spend = spendingMap[i] || 0;
     let color = darkMode ? 'bg-slate-800' : 'bg-slate-100'; 
@@ -499,7 +499,7 @@ const EMICalculator = ({ darkMode }) => {
 
 const COLORS = ['#3b82f6', '#8b5cf6', '#ec4899', '#f43f5e', '#f97316', '#eab308', '#10b981', '#06b6d4'];
 
-// --- Helper Functions ---
+
 const callGemini = async (payload) => {
   try {
     const response = await fetch(GEMINI_URL, {
@@ -516,7 +516,7 @@ const callGemini = async (payload) => {
   }
 };
 
-// --- Main Application Component ---
+
 
 export default function Trackmate() {
   const [user, setUser] = useState(null);
@@ -585,7 +585,7 @@ export default function Trackmate() {
     return () => unsubscribe();
   }, []);
 
-  // --- Data Persistence for Budget ---
+  
   useEffect(() => {
       const savedBudget = localStorage.getItem('trackmate_budget');
       if (savedBudget) setMonthlyBudget(parseInt(savedBudget));
@@ -595,11 +595,11 @@ export default function Trackmate() {
       localStorage.setItem('trackmate_budget', monthlyBudget.toString());
   }, [monthlyBudget]);
 
-  // --- Data Fetching ---
+
   useEffect(() => {
     if (!user) return;
     
-    // Fetch Transactions
+  
     const txCollection = collection(db, 'artifacts', appId, 'users', user.uid, 'transactions');
     const unsubTx = onSnapshot(txCollection, (snapshot) => {
         const txs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
@@ -751,7 +751,6 @@ const handleExportCSV = () => {
       t.isRecurring ? "Yes" : "No"
     ]);
     
-    // --- NEW CODE: Add Total Spent Row ---
     const totalSpent = transactions.reduce((acc, t) => t.type === 'expense' ? acc + parseFloat(t.amount) : acc, 0);
     rows.push(["", "", "", "Total Spent", totalSpent, ""]);
     // -------------------------------------
@@ -768,7 +767,7 @@ const handleExportCSV = () => {
     link.click();
     document.body.removeChild(link);
   };
-  // Smart Category Learning
+
   const handleDescriptionChange = (e) => {
       const val = e.target.value;
       setFormData({...formData, description: val});
@@ -787,7 +786,7 @@ const handleExportCSV = () => {
       setFormData({...formData, category: newCategoryName.trim()});
       setAddingCategory(false);
       setNewCategoryName('');
-      // Persist to Firebase
+    
       try {
           await setDoc(doc(db, 'artifacts', appId, 'users', user.uid, 'settings', 'categories'), { list: updated });
       } catch(e) { console.error(e); }
@@ -848,7 +847,7 @@ const handleExportCSV = () => {
       if (!user) return;
       try {
           await deleteDoc(doc(db, 'artifacts', appId, 'users', user.uid, 'debts', debt.id));
-          // Add settle amount as income (reimbursement)
+          // Add settle amount as income 
           await addDoc(collection(db, 'artifacts', appId, 'users', user.uid, 'transactions'), {
               type: 'income',
               amount: debt.amount,
@@ -865,14 +864,14 @@ const handleExportCSV = () => {
     try { await deleteDoc(doc(db, 'artifacts', appId, 'users', user.uid, collectionName, id)); } catch (e) { console.error(e); }
   };
 
-  // --- Stats & Gamification ---
+ 
   const stats = useMemo(() => {
     let income = 0, expense = 0;
     const catTotals = {}, monthlyData = {};
     const now = new Date();
-    const currentMonthStr = now.toISOString().slice(0, 7); // YYYY-MM
+    const currentMonthStr = now.toISOString().slice(0, 7); 
     
-    // Previous month for calculation
+   
     const prevDate = new Date();
     prevDate.setMonth(prevDate.getMonth() - 1);
     const prevMonthStr = prevDate.toISOString().slice(0, 7);
@@ -914,7 +913,6 @@ const handleExportCSV = () => {
       monthlyData[month][t.type] += val;
     });
 
-    // Count streak
     const today = new Date();
     for (let i = 1; i < 30; i++) {
         const d = new Date(today);
@@ -929,7 +927,7 @@ const handleExportCSV = () => {
         }
     }
 
-    // Trend Calculation
+    
     const calcTrend = (curr, prev) => {
         if (prev === 0) return curr > 0 ? 100 : 0;
         return Math.round(((curr - prev) / prev) * 100);
